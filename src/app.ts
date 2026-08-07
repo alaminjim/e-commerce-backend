@@ -21,7 +21,8 @@ app.use(
       if (env.NODE_ENV !== "production") {
         return callback(null, true);
       }
-      if (!origin || env.CLIENT_ORIGINS.includes(origin)) {
+      const cleanOrigin = origin ? origin.replace(/\/$/, "") : null;
+      if (!cleanOrigin || env.CLIENT_ORIGINS.includes(cleanOrigin)) {
         return callback(null, true);
       }
       return callback(null, false);

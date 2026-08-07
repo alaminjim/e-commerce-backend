@@ -17,10 +17,16 @@ const signBetterAuthValue = (value: string, secret: string): string => {
   return `${value}.${signature}`;
 };
 
+/**
+ * Cross-origin cookies between Vercel (client) and Render (server) over HTTPS
+ * REQUIRE `sameSite: "none"` AND `secure: true`.
+ * If `secure` is false when `sameSite` is "none", modern browsers (Chrome/Safari)
+ * will immediately reject and drop the cookie.
+ */
 const cookieOptions = {
   httpOnly: true,
   sameSite: "none" as const,
-  secure: isProduction,
+  secure: true,
   path: "/",
 };
 
