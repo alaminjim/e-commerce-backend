@@ -1,8 +1,7 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
 import { app } from "../src/app";
 
 // Export the express app as a Vercel Serverless Function handler.
-// Vercel will call this default export for API requests.
-export default function handler(req: VercelRequest, res: VercelResponse) {
+// Use `any` for request/response to avoid requiring @vercel/node types during tsc build.
+export default function handler(req: any, res: any) {
   return (app as any)(req, res);
 }
