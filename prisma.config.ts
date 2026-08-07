@@ -1,5 +1,4 @@
 import { existsSync, readFileSync } from "node:fs";
-import { defineConfig, env } from "prisma/config";
 
 // Load .env manually (no dotenv dependency) so Prisma CLI works locally.
 // On Render/Vercel etc. env vars are injected by the platform instead.
@@ -19,7 +18,10 @@ if (!process.env.DATABASE_URL && existsSync(".env")) {
   }
 }
 
-export default defineConfig({
+// Plain config object — NO `prisma/config` import (only node builtins), so the
+// Prisma CLI can always load this file, even during CI builds where
+// node_modules is missing or incomplete (e.g. Render build cache issues).
+export default {
   schema: "prisma/schema",
   migrations: {
     path: "prisma/migrations",
@@ -28,6 +30,6 @@ export default defineConfig({
   datasource: {
     // Empty default so `prisma generate` never crashes when DATABASE_URL is
     // not set yet (it isn't needed for generation).
-    url: env("DATABASE_URL", ""),
+    url: process.env.DATABASE_URL ?? "",
   },
-});
+};
