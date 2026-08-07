@@ -13,16 +13,13 @@ const isProduction = process.env.NODE_ENV === "production";
  * an unsigned cookie is silently rejected (getSession returns null).
  */
 const signBetterAuthValue = (value: string, secret: string): string => {
-  const signature = crypto
-    .createHmac("sha256", secret)
-    .update(value)
-    .digest("base64");
+  const signature = crypto.createHmac("sha256", secret).update(value).digest("base64");
   return `${value}.${signature}`;
 };
 
 const cookieOptions = {
   httpOnly: true,
-  sameSite: isProduction ? ("none" as const) : ("lax" as const),
+  sameSite: "none" as const,
   secure: isProduction,
   path: "/",
 };
@@ -49,7 +46,7 @@ const setBetterAuthToken = (res: Response, token: string) => {
     {
       ...cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000,
-    }
+    },
   );
 };
 
