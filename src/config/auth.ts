@@ -86,3 +86,6 @@ const createLazyProxy = (path: Array<string | number> = []) =>
   });
 
 export const auth: any = createLazyProxy();
+
+/** Returns the fully-initialized Better Auth instance (not the lazy proxy). */
+export const getRealAuth = (): Promise<any> => initAuth();
