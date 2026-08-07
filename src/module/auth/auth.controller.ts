@@ -35,11 +35,7 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
     setCookieUtils.setBetterAuthToken(res, data.token);
   }
 
-  const { accessToken, refreshToken, ...responseData } = data;
-  void accessToken;
-  void refreshToken;
-
-  res.status(201).json(new ApiResponse(201, responseData, "User registered successfully"));
+  res.status(201).json(new ApiResponse(201, data, "User registered successfully"));
 });
 
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
@@ -52,11 +48,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     setCookieUtils.setBetterAuthToken(res, data.token);
   }
 
-  const { accessToken, refreshToken, ...responseData } = data;
-  void accessToken;
-  void refreshToken;
-
-  res.json(new ApiResponse(200, responseData, "Logged in successfully"));
+  res.json(new ApiResponse(200, data, "Logged in successfully"));
 });
 
 export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
@@ -132,9 +124,5 @@ export const refreshTokenController = asyncHandler(async (req: Request, res: Res
   setCookieUtils.setAccessToken(res, data.accessToken);
   setCookieUtils.setRefreshToken(res, data.refreshToken);
 
-  const { accessToken, refreshToken, ...responseData } = data;
-  void accessToken;
-  void refreshToken;
-
-  res.json(new ApiResponse(200, responseData, "Token refreshed successfully"));
+  res.json(new ApiResponse(200, data, "Token refreshed successfully"));
 });
