@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { toNodeHandler } from "better-auth/node";
 
 import { auth } from "../../config/auth";
 import {
@@ -12,7 +11,6 @@ import {
 } from "./auth.controller";
 
 const router = Router();
-const authHandler = toNodeHandler(auth);
 
 import { optionalAuth } from "../../middleware/auth";
 
@@ -35,6 +33,10 @@ router.post("/clear-cookies", clearAuthCookiesController);
 // Better Auth fallback for all other endpoints (OAuth, magic-link, etc.)
 router.use(async (req, res, next) => {
   try {
+    // Dynamically import the node integration (ESM) at request time so the function
+    // doesn't require() an ES module during startup.
+    const mod = await import("better-auth/node");
+    const authHandler = mod.toNodeHandler(auth);
     await authHandler(req, res);
   } catch (error) {
     next(error);

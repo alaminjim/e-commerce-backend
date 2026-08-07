@@ -1,5 +1,15 @@
 import type { Request, Response, NextFunction } from "express";
-import { fromNodeHeaders } from "better-auth/node";
+import type { IncomingHttpHeaders } from "http";
+
+// Lightweight headers converter to avoid importing the ESM-only `better-auth/node` at runtime.
+const fromNodeHeaders = (headers: IncomingHttpHeaders | Record<string, unknown>) => {
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(headers as Record<string, any>)) {
+    if (v === undefined || v === null) continue;
+    out[k] = Array.isArray(v) ? v.join(",") : String(v);
+  }
+  return out;
+};
 
 import { auth } from "../config/auth";
 import { envConfig } from "../config/env";
@@ -23,11 +33,7 @@ const extractBearerToken = (authHeader: string | undefined): string | null => {
  *   2. Custom JWT accessToken (cookie: accessToken, or Authorization: Bearer <token>)
  * Sets req.user on success.
  */
-export const requireAuth = async (
-  req: Request,
-  _res: Response,
-  next: NextFunction
-) => {
+export const requireAuth = async (req: Request, _res: Response, next: NextFunction) => {
   try {
     // ── Step 1: Better Auth session ──────────────────────────────────────────
     const sessionData = await auth.api.getSession({
@@ -54,8 +60,7 @@ export const requireAuth = async (
 
     // ── Step 2: Custom JWT accessToken ───────────────────────────────────────
     const rawToken =
-      cookieUtils.getCookies(req, "accessToken") ??
-      extractBearerToken(req.headers.authorization);
+      cookieUtils.getCookies(req, "accessToken") ?? extractBearerToken(req.headers.authorization);
 
     if (!rawToken) {
       return next(new ApiError(401, "Unauthorized. Please log in."));
@@ -91,11 +96,7 @@ export const requireAuth = async (
  * Sets req.user if a valid session or token is found.
  * Does NOT throw on failure — continues silently.
  */
-export const optionalAuth = async (
-  req: Request,
-  _res: Response,
-  next: NextFunction
-) => {
+export const optionalAuth = async (req: Request, _res: Response, next: NextFunction) => {
   try {
     const sessionData = await auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
@@ -113,8 +114,7 @@ export const optionalAuth = async (
     }
 
     const rawToken =
-      cookieUtils.getCookies(req, "accessToken") ??
-      extractBearerToken(req.headers.authorization);
+      cookieUtils.getCookies(req, "accessToken") ?? extractBearerToken(req.headers.authorization);
 
     if (rawToken) {
       const result = jwtUtils.verifiedToken(rawToken, envConfig.JWT_ACCESS_SECRET);
@@ -152,8 +152,7 @@ export const restrictTo = (...roles: string[]) => {
     }
 
     // Safely cast — Better Auth User may not expose role directly
-    const userRole =
-      (req.user as { role?: string | null }).role?.toUpperCase() ?? "USER";
+    const userRole = (req.user as { role?: string | null }).role?.toUpperCase() ?? "USER";
 
     const normalizedAllowed = roles.map((r) => r.toUpperCase());
 
@@ -161,8 +160,8 @@ export const restrictTo = (...roles: string[]) => {
       next(
         new ApiError(
           403,
-          `Forbidden. Required role: [${roles.join(", ")}]. Your role: ${userRole}.`
-        )
+          `Forbidden. Required role: [${roles.join(", ")}]. Your role: ${userRole}.`,
+        ),
       );
       return;
     }

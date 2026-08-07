@@ -6,13 +6,12 @@ import { tokenUtils } from "../../utils/token";
 import { envConfig } from "../../config/env";
 import type { LoginInput, RegisterInput } from "./auth.types";
 
-const register = async (input: RegisterInput, headers?: Headers) => {
+export type HeadersMap = Record<string, string>;
+
+const register = async (input: RegisterInput, headers?: HeadersMap) => {
   const existingUser = await prisma.user.findFirst({
     where: {
-      OR: [
-        { email: { equals: input.email, mode: "insensitive" } },
-        { phone: input.phone },
-      ],
+      OR: [{ email: { equals: input.email, mode: "insensitive" } }, { phone: input.phone }],
     },
   });
 
@@ -54,7 +53,7 @@ const register = async (input: RegisterInput, headers?: Headers) => {
   };
 };
 
-const login = async (input: LoginInput, headers?: Headers) => {
+const login = async (input: LoginInput, headers?: HeadersMap) => {
   let result;
   try {
     result = await auth.api.signInEmail({
@@ -65,8 +64,7 @@ const login = async (input: LoginInput, headers?: Headers) => {
       headers,
     });
   } catch (err: unknown) {
-    const errorMsg =
-      err instanceof Error ? err.message : "Invalid email or password";
+    const errorMsg = err instanceof Error ? err.message : "Invalid email or password";
     throw new ApiError(401, errorMsg.includes("Invalid") ? errorMsg : "Invalid email or password");
   }
 
@@ -91,12 +89,12 @@ const login = async (input: LoginInput, headers?: Headers) => {
   };
 };
 
-const logout = async (headers: Headers) => {
+const logout = async (headers: HeadersMap) => {
   await auth.api.signOut({ headers });
   return { success: true };
 };
 
-const getSession = async (headers: Headers) => {
+const getSession = async (headers: HeadersMap) => {
   return auth.api.getSession({ headers });
 };
 
