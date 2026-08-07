@@ -1,0 +1,48 @@
+enum StockStatus {
+  IN_STOCK
+  OUT_OF_STOCK
+}
+
+enum ProductStatus {
+  PUBLISHED
+  DRAFT
+}
+
+model Product {
+  id             String        @id @default(uuid())
+  title          String
+  sku            String        @unique
+  slug           String        @unique
+  categoryId     String
+  collection     String
+  brand          String
+  tags           String[]
+  price          Float
+  compareAtPrice Float?
+  badge          String?
+  description    String
+  longDescription String?
+  features       String[]
+  images         String[]
+  colors         String[]
+  options        Json?
+  stock          Int           @default(0)
+  stockStatus    StockStatus   @default(IN_STOCK)
+  status         ProductStatus @default(DRAFT)
+  rating         Float         @default(0)
+  reviewCount    Int           @default(0)
+  specs          Json?
+  flags          Json?
+  dealEndsAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  category  Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  wishlistItems WishlistItem[]
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+
+  @@index([categoryId])
+  @@index([collection])
+  @@index([brand])
+}

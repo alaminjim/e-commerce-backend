@@ -1,0 +1,14 @@
+model CartItem {
+  id              String   @id @default(uuid())
+  userId          String?
+  productId       String
+  quantity        Int      @default(1)
+  selectedOptions Json?
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([productId])
+}
+

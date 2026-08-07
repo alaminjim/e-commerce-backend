@@ -1,0 +1,20 @@
+enum CategoryStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Category {
+  id          String         @id @default(uuid())
+  name        String         @unique
+  slug        String         @unique
+  status      CategoryStatus @default(ACTIVE)
+  headerGroup String?
+  sortOrder   Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  products Product[]
+
+  @@index([status])
+  @@index([headerGroup])
+}
