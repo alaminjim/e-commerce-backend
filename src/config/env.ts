@@ -1,9 +1,12 @@
 import "dotenv/config";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const defaultOrigins = [
   "http://localhost:3000",
   "http://127.0.0.1:3000",
   "https://ecomarce-client.vercel.app",
+  "https://e-omers.vercel.app",
 ];
 
 const parseOrigins = (value: string): string[] =>
@@ -16,7 +19,7 @@ export const env = {
   PORT: Number(process.env.PORT ?? 5000),
   NODE_ENV: process.env.NODE_ENV ?? "development",
   DATABASE_URL: process.env.DATABASE_URL ?? "",
-  CLIENT_URL: process.env.CLIENT_URL ?? "https://ecomarce-client.vercel.app",
+  CLIENT_URL: process.env.CLIENT_URL ?? "https://e-omers.vercel.app",
   CLIENT_ORIGINS: process.env.CLIENT_URL
     ? Array.from(new Set([...parseOrigins(process.env.CLIENT_URL), ...defaultOrigins]))
     : defaultOrigins,
@@ -26,7 +29,10 @@ export const env = {
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN ?? "7d",
   BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET ?? "omers_better_auth_secret_key_999",
   BETTER_AUTH_URL:
-    process.env.BETTER_AUTH_URL ?? "http://localhost:5000/api/v1/auth",
+    process.env.BETTER_AUTH_URL ??
+    (isProduction
+      ? "https://e-commerce-backend-krm0.onrender.com/api/v1/auth"
+      : "http://localhost:5000/api/v1/auth"),
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? "",
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ?? "",
   FACEBOOK_CLIENT_ID: process.env.FACEBOOK_CLIENT_ID ?? "",
