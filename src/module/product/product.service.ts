@@ -229,9 +229,17 @@ const update = async (id: string, input: UpdateProductInput) => {
     categoryId = await resolveCategoryId(input.category);
   }
 
+  const data = toPrismaData(input, categoryId) as Prisma.ProductUpdateInput;
+
+  // A product with no stock left must never stay marked as IN_STOCK.
+  // (Explicit admin stockStatus choices are otherwise left untouched.)
+  if (typeof input.stock === "number" && input.stock <= 0) {
+    data.stockStatus = "OUT_OF_STOCK";
+  }
+
   const updated = await prisma.product.update({
     where: { id },
-    data: toPrismaData(input, categoryId) as Prisma.ProductUpdateInput,
+    data,
     include: { category: true },
   });
 

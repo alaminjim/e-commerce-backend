@@ -127,6 +127,13 @@ const create = async (
             `Insufficient stock for "${item.product.title}". Please update your cart.`
           );
         }
+
+        // Auto-mark the product OUT_OF_STOCK once its stock hits zero
+        // so the storefront stops showing it as available.
+        await tx.product.updateMany({
+          where: { id: item.productId, stock: { lte: 0 } },
+          data: { stockStatus: "OUT_OF_STOCK" },
+        });
       }
 
       const placedAt = new Date();
