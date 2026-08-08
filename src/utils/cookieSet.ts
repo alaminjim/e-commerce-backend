@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import crypto from "crypto";
 import type { Response } from "express";
 
@@ -23,11 +22,15 @@ const signBetterAuthValue = (value: string, secret: string): string => {
  * REQUIRE `sameSite: "none"` AND `secure: true`.
  * If `secure` is false when `sameSite` is "none", modern browsers (Chrome/Safari)
  * will immediately reject and drop the cookie.
+ *
+ * In development (localhost over HTTP) a `Secure` cookie is silently DROPPED by
+ * the browser, which breaks every authenticated API call after login. So cookies
+ * are only hardened for production; dev uses non-secure, same-site cookies.
  */
 const cookieOptions = {
   httpOnly: true,
-  sameSite: "none" as const,
-  secure: true,
+  sameSite: isProduction ? ("none" as const) : ("lax" as const),
+  secure: isProduction,
   path: "/",
 };
 
