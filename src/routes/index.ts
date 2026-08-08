@@ -11,6 +11,8 @@ import { categoryRouter } from "../module/category/category.route";
 import { collectionRouter } from "../module/collection/collection.route";
 import { brandRouter } from "../module/brand/brand.route";
 import { orderRouter } from "../module/order/order.route";
+import { uploadRouter } from "../module/upload/upload.route";
+import { reviewRouter } from "../module/review/review.route";
 
 const routes = Router();
 
@@ -25,5 +27,7 @@ routes.use("/categories", categoryRouter);
 routes.use("/collections", collectionRouter);
 routes.use("/brands", brandRouter);
 routes.use("/orders", orderRouter);
+routes.use("/uploads", uploadRouter);
+routes.use("/reviews", reviewRouter);
 
 export { routes };

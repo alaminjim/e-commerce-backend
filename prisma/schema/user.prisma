@@ -15,6 +15,7 @@ model User {
   accounts      Account[]
   orders        Order[]
   addresses     UserAddress[]
+  reviews       Review[]
 
   @@index([email])
 }

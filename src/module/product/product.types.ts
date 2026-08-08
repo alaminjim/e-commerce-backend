@@ -46,7 +46,32 @@ export const createProductSchema = z.object({
   dealEndsAt: z.coerce.date().nullable().optional(),
 });
 
-export const updateProductSchema = createProductSchema.partial();
+export const updateProductSchema = z.object({
+  title: z.string().trim().min(1).optional(),
+  sku: z.string().trim().min(1).optional(),
+  slug: z.string().trim().min(1).optional(),
+  category: z.string().trim().min(1).optional(),
+  collection: z.string().trim().min(1).optional(),
+  brand: z.string().trim().min(1).optional(),
+  tags: z.array(z.string()).optional(),
+  price: z.number().positive().optional(),
+  compareAtPrice: z.number().positive().nullable().optional(),
+  badge: z.string().nullable().optional(),
+  description: z.string().trim().min(1).optional(),
+  longDescription: z.string().nullable().optional(),
+  features: z.array(z.string()).optional(),
+  images: z.array(z.string()).optional(),
+  colors: z.array(z.string()).optional(),
+  options: z.array(optionSchema).nullable().optional(),
+  stock: z.number().int().min(0).optional(),
+  stockStatus: z.enum(["IN_STOCK", "OUT_OF_STOCK"]).optional(),
+  status: z.enum(["PUBLISHED", "DRAFT"]).optional(),
+  rating: z.number().min(0).max(5).optional(),
+  reviewCount: z.number().int().min(0).optional(),
+  specs: specsSchema.nullable().optional(),
+  flags: flagsSchema.optional(),
+  dealEndsAt: z.coerce.date().nullable().optional(),
+});
 
 export const listProductQuerySchema = z.object({
   category: z.string().optional(),

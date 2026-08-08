@@ -41,6 +41,7 @@ model Product {
   wishlistItems WishlistItem[]
   cartItems     CartItem[]
   orderItems    OrderItem[]
+  reviews       Review[]
 
   @@index([categoryId])
   @@index([collection])
